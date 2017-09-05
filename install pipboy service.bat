@@ -1,0 +1,1 @@
+qckwinsvc --install --name "PipBoy" --description "Turns on PipBoy automatically" --script "D:\Aceline\Internal\Pipboy\index.js" --startImmediately

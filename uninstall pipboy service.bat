@@ -1,0 +1,1 @@
+qckwinsvc --uninstall --name "PipBoy" --script "D:\Aceline\Internal\Pipboy\index.js"
