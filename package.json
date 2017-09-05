@@ -1,0 +1,22 @@
+{
+  "name": "pipboycontroller",
+  "version": "1.0.0",
+  "description": "Pipboy",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/G1itcher/PipBoyController.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/G1itcher/PipBoyController/issues"
+  },
+  "homepage": "https://github.com/G1itcher/PipBoyController#readme",
+  "dependencies": {
+    "python-shell": "^0.4.0"
+  }
+}
