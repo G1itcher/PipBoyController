@@ -8,6 +8,7 @@
  */
 
 #include <ESP8266WiFi.h>
+#include <ESP8266Ping.h>
 #include <string>
 
 const char* ssid = "ASUS";
@@ -25,6 +26,9 @@ unsigned long offAt = 0;                   // How long since the last on signal?
 bool isOn = false;
 int failCount = 0;
 
+unsigned long pingAt = 0;
+const float PING_DELAY = 30000;
+
 std::string host = "autoremotejoaomgcd.appspot.com";
 std::string getParams = "/sendmessage?key=APA91bH0vRbYArMB3L1D8hv1S6Ptc8YvSxl2yorpitycZUiTiilNraalTHHyrNLsaPqHH4AEjbGHP2DrNUFAgyjhxifVD7axPevTzbuC5KmwgHdDIwe2sggyTbdhT7fLwx0CXAo4wvdg&message=";
 std::string onCommand = "on";
@@ -33,6 +37,8 @@ std::string offCommand = "of";
 // Create an instance of the server
 // specify the port to listen on as an argument
 WiFiServer server(80);
+
+IPAddress pingAddress(8,8,8,8);
 
 // To connect to the on/off server
 
@@ -107,14 +113,25 @@ void setup() {
 }
 
 void loop() {
-    if(WiFi.status() != WL_CONNECTED || failCount > MAX_FAILS_BEFORE_RESTART) //Check if we're still connected to the WiFi
+    unsigned long currentMillis = millis();
+    int pingResult = 1;
+    //*
+    if(currentMillis >= pingAt)
+    {
+       Serial.println("PINGING");
+       pingAt = currentMillis + PING_DELAY;
+       pingResult = Ping.ping(pingAddress);
+       Serial.println("PING");
+       Serial.println(pingResult);
+    }
+    //*/
+    if(WiFi.status() != WL_CONNECTED || failCount > MAX_FAILS_BEFORE_RESTART || !pingResult) //Check if we're still connected to the WiFi
     {
       Serial.println("Shutting Down in 9 seconds");
       ESP.restart();
       Serial.println("You should never see this");
     }
     ESP.wdtFeed();
-    unsigned long currentMillis = millis();
     if(currentMillis >= offAt && isOn)
     {
         isOn = false;
