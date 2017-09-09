@@ -5,6 +5,8 @@ var proc = require("process");
 var onURL = 'http://192.168.1.217/on'
 var offURL = 'http://192.168.1.217/off'
 
+var onInterval;
+
 var options = {
     mode: 'text',
     scriptPath: __dirname + "/PipboyServer/"
@@ -15,6 +17,12 @@ var greenPipboy = __dirname + "/PipboyServer/GreenData";
 var yellowPipboy = __dirname + "/PipboyServer/YellowData";
 var redPipboy = __dirname + "/PipboyServer/RedData";
 
+var colours = {
+    Red: redPipboy,
+    Green: greenPipboy,
+    Yellow: yellowPipboy
+}
+
 var pipboyState = greenPipboy;
 
 function startPipboyServer(){
@@ -22,11 +30,13 @@ function startPipboyServer(){
     setPipboyState(pipboyState);
 }
 
-function setPipboyState(state)
+function setPipboyColour(colour)
 {
-    pipboyState = state;
-    console.log("setState: "+state);
-    pipboyServer.send("load "+state);
+    var colourFile = colours[colour]
+    if(colourFile){
+        console.log("setState: "+colourFile);
+        pipboyServer.send("load "+colourFile);
+    }
 }
 
 startPipboyServer();
@@ -40,24 +50,49 @@ function turnOn(){
     }
 }
 
+function stayOn(){
+    onInterval = setInterval(turnOn, 4000);
+}
+
+function turnOff(){
+    try{
+        http.get(offURL);
+    }
+    finally{
+        // Nothing to do.
+    }
+}
+
+function stayOff(){
+    clearInterval(onInterval);
+    turnOff();
+}
+
 setInterval(turnOn, 4000);
 
 turnOn();
 
-var read = process.openStdin();
-read.addListener("data", function(d){
-    console.log("Entered: "+d);
-    d = d.toString().trim();
-    switch(d)
-    {
-        case "Green":
-            setPipboyState(greenPipboy);
-            break;
-        case "Yello":
-            setPipboyState(yellowPipboy);
-            break;
-        case "Red":
-            setPipboyState(redPipboy);
-            break;
-    }
-})
+var coloursMap = {};
+
+for(var colour in colours){
+    coloursMap[colour] = colour;
+}
+
+module.exports = {
+    start: function(){
+        stayOn();
+    },
+    stop = function(){
+        stayOff();
+    },
+    on: function(){
+        turnOn();
+    },
+    off: function(){
+        turnOff();
+    },
+    setColour: function(colour){
+        setPipboyColour(colour);
+    },
+    Colours: coloursMap 
+}
