@@ -141,9 +141,10 @@ void loop() {
     std::string command;
     // Match the request
     bool retry = true;
+    int val;
     while(retry)
     {
-        int val;
+      retry = false;
         if (req.indexOf("/on") != -1)
         {
             offAt = currentMillis + AUTO_OFF_DELAY;
@@ -184,7 +185,7 @@ void loop() {
             digitalWrite(PIN, val);
             bool success = setScreenState(command);
             retry = !success;
-            failCount += success
+            failCount += success;
         }
     }
 
@@ -203,6 +204,7 @@ void loop() {
     client.print(s);
     delay(1);
     Serial.println("Client disonnected");
+    client.stop();
 
     // The client will actually be disconnected 
     // when the function returns and 'client' object is detroyed
